@@ -5,26 +5,18 @@ $user = 'root';
 $password = '';
 $dbh = new PDO($dsn,$user,$password);
 $dbh->query('SET NAMES utf8');
-
 $friend_id = $_GET['friend_id'];
-
 $sql ='SELECT * FROM `friends` WHERE `friend_id` = ' . $friend_id;
-
 // SQL実行
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
-
 $friends = $stmt->fetch(PDO::FETCH_ASSOC);
-
 // セレクトボックスの都道府県
 $sql = 'SELECT * FROM `areas` WHERE 1';
-
 // SQL実行
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
-
 $areas = array();
-
 while(1){
   // データ取得
   $rec = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,7 +26,16 @@ while(1){
   // データ格納
   $areas[]=$rec;
 }
-
+// データの更新処理
+$friend_id = $_GET['friend_id'];
+if (isset($_POST) && !empty($_POST)) {
+  $sql = 'UPDATE `friends` SET `friend_name`="'.$_POST['friend_name'].'",`area_id`='.$_POST['area_id'].',`gender`='.$_POST['gender'].',`age`='.$_POST['age'].' WHERE `friend_id` = ' . $friend_id;
+  // SQL実行
+  $stmt = $dbh->prepare($sql);
+  $stmt->execute();
+  // 更新処理が完了後、index.phpへ遷移
+  header('Location: index.php');
+}
 $dbh = null;
 ?>
 <!DOCTYPE html>
@@ -87,7 +88,7 @@ $dbh = null;
     <div class="row">
       <div class="col-md-4 content-margin-top">
         <legend>友達の編集</legend>
-        <form method="post" action="edit.php" class="form-horizontal" role="form">
+        <form method="post" action="edit.php?friend_id=<?php echo $friends['friend_id'] ?>" class="form-horizontal" role="form">
             <!-- 名前 -->
             <div class="form-group">
               <label class="col-sm-2 control-label">名前</label>
@@ -101,12 +102,12 @@ $dbh = null;
               <div class="col-sm-10">
                 <select class="form-control" name="area_id">
                   <option value="0">出身地を選択</option>
-              <?php foreach ($areas as $area) { 
-                if ($area['area_id'] == $friends['area_id']) { ?>
-                  <option value="<?php echo $area['area_id']; ?>" selected ><?php echo $area['area_name']; ?></option>
-                   <?php } else { ?>
-                  <option value="<?php echo $area['area_id']; ?>" ><?php echo $area['area_name']; ?></option>
-                <?php } ?>
+              <?php foreach ($areas as $area) { ?>
+              <?php if ($area['area_id'] == $friends['area_id']) { ?>
+                  <option value="<?php echo $area['area_id']; ?>" selected><?php echo $area['area_name']; ?></option>
+              <?php } else{ ?>
+                  <option value="<?php echo $area['area_id']; ?>"><?php echo $area['area_name']; ?></option>
+              <?php } ?>
               <?php } ?>
                 </select>
               </div>
@@ -144,3 +145,4 @@ $dbh = null;
     <script src="js/bootstrap.min.js"></script>
   </body>
 </html>
+Status API Training Shop Blog About Pricing

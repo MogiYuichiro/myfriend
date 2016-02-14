@@ -5,18 +5,14 @@ $user = 'root';
 $password = '';
 $dbh = new PDO($dsn,$user,$password);
 $dbh->query('SET NAMES utf8');
-
 // セレクトボックスの都道府県情報を取得する
 // SQL文
 $sql = 'SELECT * FROM `areas`';
-
 // SQL実行
 $stmt = $dbh->prepare($sql);
 $stmt->execute();
-
 // 取得データ格納用Array
 $areas = array();
-
 while(1){
   // データ取得
   $rec = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -26,24 +22,18 @@ while(1){
   // データ格納
   $areas[]=$rec;
 }
-
 // DBに登録する処理
 // POSTデータが有った時だけ
 if (isset($_POST) && !empty($_POST)) {
   $sql ='INSERT INTO `friends`(`friend_id`, `friend_name`, `area_id`, `gender`, `age`, `created`) ';
   $sql .= 'VALUES (null,"'.$_POST['name'].'",'.$_POST['area_id'].','.$_POST['gender'].','.$_POST['age'].',now())';
-
   // SQL実行
   $stmt = $dbh->prepare($sql);
   $stmt->execute();
-
   header('Location: index.php');
 }
-
 //データベース切断
 $dbh=null;
-
-
 ?>
 <!DOCTYPE html>
 <html lang="ja">
